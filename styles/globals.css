@@ -109,6 +109,12 @@ body {
 main{
   overflow-y: auto;
 }
+
+.selectric-wrapper {
+  position: relative;
+  cursor: pointer
+}
+
 .pokemon-list-contents {
   background-color: #0a141e;
   position: relative;
@@ -116,6 +122,7 @@ main{
 }
 .pokemon-list--box--wrapper{
     width: 25%;
+    cursor: pointer
 }
 .pokemon-list--box {
   display: block;
