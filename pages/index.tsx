@@ -1,17 +1,22 @@
-
-import { apiNewPokemon, pokeApi, supaBaseApi } from '@/api'
+import { apiNewPokemon, pokeApi } from '@/api'
 import { Layout } from '@/components/layout'
 import { PokemonCard } from '@/components/pokemon/PokemonCard'
-import { Ability, Pokemon, PokemonListResponse, Species, Stat, Type } from '@/interfaces'
-import { NewPokemon } from '@/interfaces/new-pokemon'
-import { eliminarDuplicados, getPokemonFullInfo } from '@/utils'
+import { INewPokemon } from '@/interfaces'
 import { GetStaticProps, NextPage } from 'next'
 import { useEffect } from 'react'
 interface Props{
-  pokemons:Pokemon[]
+  pokemons:INewPokemon[]
 }
 
 const HomePage:NextPage<Props> = ({pokemons}) => {
+ 
+  const fetchPokeData = async ()=>{
+    const responsePokemons= await apiNewPokemon.getAllPokemon();
+    console.log(responsePokemons);
+  }
+  useEffect(() => {
+    fetchPokeData()
+  }, [])
   
   return (
     <div className='pokemon-list-contents'>
@@ -19,7 +24,10 @@ const HomePage:NextPage<Props> = ({pokemons}) => {
         
           <div className='pokemon-list'>
             {
-              pokemons.map(pkm=>(<PokemonCard pokemon={pkm} key={pkm.name}/>))
+              pokemons.map(pkm=>(
+                <PokemonCard pokemon={pkm} key={pkm.name}/>
+                // <h1 key={pkm.name}>{pkm.name}</h1>
+              ))
             }
           </div>
         
@@ -30,21 +38,12 @@ const HomePage:NextPage<Props> = ({pokemons}) => {
 
 export const getStaticProps:GetStaticProps =async (ctx) => {
 
-
-  const { data } = await pokeApi.get<PokemonListResponse>('/pokemon?limit=151');
-
-  const pokemons = await Promise.all(
-    data.results.map(async (pkm) => {
-      return await getPokemonFullInfo(pkm.name);
-    })
-  )
-
-  const fullpokemon = pokemons.flat();
-  const resultado = eliminarDuplicados(fullpokemon);
+  const responsePokemons= await apiNewPokemon.getAllPokemon();
+  const pokemons = responsePokemons.data;
 
   return{
     props:{
-      pokemons:resultado
+      pokemons
     }
   }
 }
